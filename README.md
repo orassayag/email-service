@@ -1,4 +1,4 @@
-# Auto Packages Updater
+# Email Service
 
 Built in February 2023. A Node.js application to send emails via AWS SQS.
 
