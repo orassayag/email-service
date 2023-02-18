@@ -1,0 +1,4 @@
+migrations/
+node_modules/
+seeders/
+package-lock.json
