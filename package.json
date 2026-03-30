@@ -1,8 +1,9 @@
 {
   "name": "email-service",
   "version": "1.0.0",
-  "description": "Email Service",
-  "main": "index.ts",
+  "description": "A Node.js microservice for sending templated emails via AWS SQS. Consumes messages from SQS queues, fetches email templates from database, renders with Handlebars, and sends via AWS SES or SMTP.",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "lint": "eslint src",
     "lint-staged": "lint-staged",
@@ -25,9 +26,33 @@
       "./src/testUtils/setupAfterEnv.ts"
     ]
   },
-  "keywords": [],
-  "author": "Or Assayag",
-  "license": "ISC",
+  "keywords": [
+    "email-service",
+    "aws-sqs",
+    "aws-ses",
+    "smtp",
+    "nodemailer",
+    "typescript",
+    "email-templates",
+    "handlebars",
+    "sequelize",
+    "express",
+    "microservice",
+    "queue",
+    "transactional-email",
+    "datadog",
+    "multi-tenant"
+  ],
+  "author": "Or Assayag <orassayag@gmail.com> (https://github.com/orassayag)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orassayag/email-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/orassayag/email-service/issues"
+  },
+  "homepage": "https://github.com/orassayag/email-service#readme",
   "dependencies": {
     "@aws-sdk/client-ses": "3.238.0",
     "@aws-sdk/client-sqs": "3.231.0",
