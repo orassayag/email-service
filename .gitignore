@@ -1,9 +1,41 @@
+# Distribution
+dist
+out
+build
+node_modules
+/node_modules/
+
 # Logs
-/logs/
+*.log*
 logs
+/logs/
 *.log
 npm-debug.log*
 
+# Environment
+*.env*
+!.env.example
+.env.production
+.env.test
+.env
+.env.dev
+.env.prod
+
+# OAuth
+token.json
+client_secret*.json
+
+# Runtime Data
+api-stats.json
+
+# Misc
+.DS_Store
+.pnpm-store
+
+# Tests
+coverage
+
+# Others:
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -17,14 +49,10 @@ pids
 lib-cov
 
 # Coverage directory used by tools like istanbul
-coverage
 *.lcov
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
-
-# Dependency directories
-/node_modules/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -35,19 +63,8 @@ build/Release
 # Optional eslint cache
 .eslintcache
 
-# dotenv environment variables file
-.env
-.env.test
-.env.dev
-.env.prod
-
-# build
-dist
-build
-
 # config
 config/env.json
 
 # IDE specific
 .idea/
-.DS_Store

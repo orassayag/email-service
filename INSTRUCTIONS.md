@@ -1,16 +1,184 @@
-# Instructions
+# Setup and Usage Instructions
 
-## Setup Instructions
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [System Requirements](#system-requirements)
+3. [Initial Setup](#initial-setup)
+4. [Install Dependencies](#install-dependencies)
+5. [Available Commands](#available-commands)
+6. [Development Commands](#development-commands)
+7. [Running Scripts](#running-scripts)
+8. [Documentation](#documentation)
+9. [Extending the Application](#extending-the-application)
+10. [External Resources](#external-resources)
+11. [Best Practices](#best-practices)
+
+## Prerequisites
+
+### System Requirements
+
+- **Node.js**: Version 14 or higher
+- **Package Manager**: npm
+- **Database**: MySQL or MariaDB
+- **AWS Account**: For SQS and SES (optional, can use SMTP)
+- **Operating System**: macOS, Linux, or Windows
+- **Memory**: 1GB RAM minimum
+- **Disk Space**: 500MB for application and dependencies
+
+## Initial Setup
 
 1. Open the project in your IDE (VSCode recommended)
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Build the project:
-   ```bash
-   tsc --project tsconfig.build.json
-   ```
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+## Available Commands
+
+### Development Commands
+
+**Linting and Formatting:**
+
+```bash
+# Check code style and quality
+npm run lint
+
+# Check code formatting
+npm run prettier-check
+
+# Fix code formatting
+npm run prettier-fix
+
+# Type-check without emitting files
+npm run tsc-check
+```
+
+**Building and Running:**
+
+```bash
+# Development mode with auto-reload
+npm run dev
+
+# Build and run in production mode
+npm start
+
+# Build TypeScript only
+tsc --project tsconfig.build.json
+```
+
+**Testing:**
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test-watch
+```
+
+**Database Migrations:**
+
+```bash
+# Create a new migration
+npm run dbm:create -- migration-name
+
+# Run all pending migrations
+npm run dbm:up
+
+# Rollback last migration
+npm run dbm:down
+
+# Run all seeds
+npm run dbs:up
+```
+
+### Running Scripts
+
+The primary scripts are:
+
+- `npm start`: Runs the application in production mode
+- `npm run dev`: Runs the application in development mode with auto-reload
+- `npm test`: Runs the test suite
+
+## Documentation
+
+- [README.md](README.md) - Project overview and features
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Development guidelines
+- [CHANGELOG.md](CHANGELOG.md) - Version history
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - Code of conduct
+- [SECURITY.md](SECURITY.md) - Security policy
+
+## Extending the Application
+
+### Adding New Email Templates
+
+1. Create a new migration using `npm run dbm:create`
+2. Add the template to the database
+3. Update the message format to include the new template type
+
+### Adding New Email Transports
+
+1. Create a new class implementing the email API interface
+2. Update the email sender to support the new transport
+3. Add configuration options for the new transport
+
+## External Resources
+
+- [AWS SQS Documentation](https://docs.aws.amazon.com/sqs/)
+- [AWS SES Documentation](https://docs.aws.amazon.com/ses/)
+- [Nodemailer Documentation](https://nodemailer.com/)
+- [Sequelize Documentation](https://sequelize.org/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Express Documentation](https://expressjs.com/)
+- [Winston Documentation](https://github.com/winstonjs/winston)
+
+## Best Practices
+
+### Before Running in Production
+
+1. **Test in Development**: Always test changes in development mode first
+2. **Review Logs**: Check logs for expected behavior
+3. **Verify Configuration**: Ensure all environment variables are set correctly
+4. **Backup Database**: Backup the database before migrations
+5. **Start Small**: Test with a small number of emails first
+
+### Data Quality
+
+1. **Validate Templates**: Ensure email templates are properly formatted
+2. **Test Rendering**: Test template rendering with sample data
+3. **Check SQS Messages**: Verify SQS message format is correct
+4. **Monitor Queues**: Keep an eye on SQS queue depths
+
+### Operational Best Practices
+
+1. **Regular Maintenance**:
+
+   - Review logs periodically
+   - Update dependencies regularly: `npm update`
+   - Monitor DataDog metrics
+
+2. **Monitoring**:
+
+   - Check health endpoint regularly
+   - Monitor SQS queue lengths
+   - Track email delivery rates
+
+3. **Security**:
+
+   - Never commit `.env` files
+   - Rotate API keys periodically
+   - Review AWS IAM permissions
+   - Use environment variables for secrets
+
+4. **Performance**:
+   - Monitor database performance
+   - Optimize email template rendering
+   - Consider queue backpressure handling
+
+## Setup Instructions
 
 ## Configuration
 
@@ -50,6 +218,7 @@ DD_APP_KEY=your_datadog_app_key
 ### Configuration File
 
 Edit `config/env.json` for additional configuration:
+
 - Server settings (port, environment)
 - SMTP server details
 - Database connection settings
@@ -61,6 +230,7 @@ Edit `config/env.json` for additional configuration:
 ### Run Migrations
 
 Create the email_templates table:
+
 ```bash
 npm run dbm:up
 ```
@@ -68,6 +238,7 @@ npm run dbm:up
 ### Seed Data (Optional)
 
 Populate initial email templates:
+
 ```bash
 npm run dbs:up
 ```
@@ -89,6 +260,7 @@ npm run dbm:down
 ### Development Mode
 
 Uses nodemon for auto-restart on file changes:
+
 ```bash
 npm run dev
 ```
@@ -96,11 +268,13 @@ npm run dev
 ### Production Mode
 
 Compiles TypeScript and runs compiled JavaScript:
+
 ```bash
 npm start
 ```
 
 The service will:
+
 1. Initialize DataDog monitoring
 2. Start the SQS consumer
 3. Start the Express server on the configured port
@@ -108,15 +282,19 @@ The service will:
 ## API Endpoints
 
 ### Health Check
+
 ```bash
 GET /api/v1/health
 ```
+
 Returns: `Ok` with 200 status
 
 ### Version
+
 ```bash
 GET /api/v1/version
 ```
+
 Returns: Content of `version.txt` file
 
 ## Email Templates
@@ -124,6 +302,7 @@ Returns: Content of `version.txt` file
 ### Template Structure
 
 Email templates are stored in the `email_templates` database table with:
+
 - `templateType`: Unique identifier for the template
 - `templateName`: Human-readable name
 - `templateDescription`: Template description
@@ -134,6 +313,7 @@ Email templates are stored in the `email_templates` database table with:
 ### Template Variables
 
 Templates use Handlebars syntax and support these variables:
+
 - `{{video.name}}` - Video name
 - `{{video.slidesCount}}` - Number of slides
 - `{{url}}` - Custom URL
@@ -141,6 +321,7 @@ Templates use Handlebars syntax and support these variables:
 - `{{copyrightYear}}` - Current year
 
 Example template:
+
 ```json
 {
   "subject": "Welcome {{receiver.firstName}}!",
@@ -154,10 +335,12 @@ Example template:
 ### Message Structure
 
 Messages should have:
+
 - **MessageAttributes**: `type` attribute with template type
 - **Body**: JSON string with macros
 
 Example SQS message:
+
 ```json
 {
   "MessageAttributes": {
@@ -173,6 +356,7 @@ Example SQS message:
 ### Body Macros
 
 The message body must include:
+
 - `email`: Recipient email address
 - `accountId`: Account ID for template lookup
 - `receiver`: User object with details
@@ -183,11 +367,13 @@ The message body must include:
 ### Linting
 
 Check for linting errors:
+
 ```bash
 npm run lint
 ```
 
 Lint staged files:
+
 ```bash
 npm run lint-staged
 ```
@@ -195,11 +381,13 @@ npm run lint-staged
 ### Code Formatting
 
 Check formatting:
+
 ```bash
 npm run prettier-check
 ```
 
 Fix formatting issues:
+
 ```bash
 npm run prettier-fix
 ```
@@ -207,6 +395,7 @@ npm run prettier-fix
 ### Type Checking
 
 Run TypeScript compiler without emitting files:
+
 ```bash
 npm run tsc-check
 ```
@@ -214,11 +403,13 @@ npm run tsc-check
 ### Testing
 
 Run all tests:
+
 ```bash
 npm test
 ```
 
 Watch mode for development:
+
 ```bash
 npm run test-watch
 ```
@@ -279,6 +470,7 @@ The service automatically initializes DataDog monitoring on startup. Configure D
 ### Logging
 
 Winston logger is used throughout the application:
+
 - Info level: Successful operations, SQS message processing
 - Error level: Errors, failed email sends
 
@@ -294,8 +486,13 @@ Logs are output to console and can be configured to send to external services.
 
 ## Author
 
-* **Or Assayag** - *Initial work* - [orassayag](https://github.com/orassayag)
-* Or Assayag <orassayag@gmail.com>
-* GitHub: https://github.com/orassayag
-* StackOverflow: https://stackoverflow.com/users/4442606/or-assayag?tab=profile
-* LinkedIn: https://linkedin.com/in/orassayag
+- **Or Assayag** - _Initial work_ - [orassayag](https://github.com/orassayag)
+- Or Assayag <orassayag@gmail.com>
+- GitHub: https://github.com/orassayag
+- StackOverflow: https://stackoverflow.com/users/4442606/or-assayag?tab=profile
+- LinkedIn: https://linkedin.com/in/orassayag
+
+## Last Updated
+
+**Last Updated**: June 2026
+**Version**: 1.0.0

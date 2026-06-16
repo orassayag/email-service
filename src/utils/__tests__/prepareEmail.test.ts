@@ -1,8 +1,16 @@
-import sinon from 'sinon';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prepareEmail } from '../prepareEmail';
 import { EmailByEmailTypeArgs } from '../../types/types';
 import { MESSAGE_FROM } from '../../constants';
+
+// Mock Model to prevent loading schemas
+vi.mock('../../Model', () => ({
+  default: {
+    findEmailTemplateByType: vi.fn(),
+  },
+}));
 import Model from '../../Model';
+const mockFindEmailTemplateByType = Model.findEmailTemplateByType as any;
 
 const wrongTemplate = 'NON_EXIST_TEMPLATE';
 const properTemplate = 'EXIST_TEMPLATE';
@@ -30,14 +38,14 @@ const properArgsForPrep: EmailByEmailTypeArgs = {
   },
 };
 
-const dbStub = sinon.stub(Model, 'findEmailTemplateByType');
-dbStub.withArgs({ templateType: wrongTemplate }).resolves(null);
-dbStub
-  .withArgs({ templateType: properTemplate, accountId: null })
-  .resolves(stubbedResponseObj);
-
 describe('Prepare email tests', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should return error if no Template was found for email type', async () => {
+    mockFindEmailTemplateByType.mockResolvedValue(null);
+
     await expect(
       prepareEmail({
         ...properArgsForPrep,
@@ -49,12 +57,14 @@ describe('Prepare email tests', () => {
   });
 
   it('should trigger an email sending when all the requirements met', async () => {
+    mockFindEmailTemplateByType.mockResolvedValue(stubbedResponseObj);
+
     const result = await prepareEmail(
       (properArgsForPrep as unknown) as EmailByEmailTypeArgs
     );
     expect(result).toStrictEqual({
       from: MESSAGE_FROM,
-      to: properArgsForPrep.macros.receiver.email,
+      to: properArgsForPrep.macros.email,
       subject: template.subject,
       text: template.bodyTxt,
       html: template.bodyHtml,

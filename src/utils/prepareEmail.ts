@@ -24,7 +24,7 @@ const prepareEmail = async ({
   const emailTemplate = await Model.findEmailTemplateByType({
     templateType,
     accountId,
-  })
+  });
 
   const { sender, templateObj } = emailTemplate || {};
 

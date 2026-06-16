@@ -1,31 +1,7 @@
 {
   "name": "email-service",
   "version": "1.0.0",
-  "description": "A Node.js microservice for sending templated emails via AWS SQS. Consumes messages from SQS queues, fetches email templates from database, renders with Handlebars, and sends via AWS SES or SMTP.",
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
-  "scripts": {
-    "lint": "eslint src",
-    "lint-staged": "lint-staged",
-    "prettier-check": "prettier --check .",
-    "prettier-fix": "prettier --write .",
-    "start": "npm run dbm:up && tsc --project tsconfig.build.json && node dist/src/index.js",
-    "dev": "nodemon src/index.ts",
-    "test": "jest",
-    "test-watch": "jest --verbose --watchAll --no-cache --runInBand",
-    "tsc-check": "tsc --noEmit",
-    "dbs:up": "npx sequelize-cli db:seed:all --env dbData",
-    "dbm:create": "npx sequelize-cli migration:generate --env dbData --name",
-    "dbm:up": "npx sequelize-cli db:migrate --env dbData",
-    "dbm:down": "npx sequelize-cli db:migrate:undo --env dbData"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "preset": "ts-jest",
-    "setupFilesAfterEnv": [
-      "./src/testUtils/setupAfterEnv.ts"
-    ]
-  },
+  "description": "A Node.js TypeScript microservice for transactional email processing via AWS SQS. It consumes queue messages, loads Handlebars templates from a database, renders dynamic email content, and sends via AWS SES or SMTP. Includes multi-tenant support, retries, logging, monitoring with Winston & DataDog",
   "keywords": [
     "email-service",
     "aws-sqs",
@@ -43,16 +19,101 @@
     "datadog",
     "multi-tenant"
   ],
-  "author": "Or Assayag <orassayag@gmail.com> (https://github.com/orassayag)",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/orassayag/email-service.git"
-  },
+  "homepage": "https://github.com/orassayag/email-service#readme",
   "bugs": {
     "url": "https://github.com/orassayag/email-service/issues"
   },
-  "homepage": "https://github.com/orassayag/email-service#readme",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/orassayag/email-service.git"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/orassayag"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Or Assayag",
+    "email": "orassayag@gmail.com",
+    "url": "https://github.com/orassayag"
+  },
+  "contributors": [
+    {
+      "name": "Or Assayag",
+      "email": "orassayag@gmail.com",
+      "url": "https://github.com/orassayag"
+    }
+  ],
+  "type": "commonjs",
+  "main": "src/index.ts",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    ".github",
+    ".vscode",
+    "config",
+    "logs",
+    "migrations",
+    "src",
+    ".env.example",
+    ".eslintignore",
+    ".gitignore",
+    ".prettierignore",
+    ".prettierrc",
+    ".sequelizerc",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "Dockerfile",
+    "eslint.config.mjs",
+    "INSTRUCTIONS.md",
+    "Jenkinsfile",
+    "knip.json",
+    "LICENSE",
+    "package-lock.json",
+    "package.json",
+    "README.md",
+    "SECURITY.md",
+    "tsconfig.build.json",
+    "tsconfig.json",
+    "tsconfig.node.json",
+    "version.txt",
+    "vitest.config.ts"
+  ],
+  "scripts": {
+    "coverage": "vitest --coverage",
+    "dbm:create": "npx sequelize-cli migration:generate --env dbData --name",
+    "dbm:down": "npx sequelize-cli db:migrate:undo --env dbData",
+    "dbm:up": "npx sequelize-cli db:migrate --env dbData",
+    "dbs:up": "npx sequelize-cli db:seed:all --env dbData",
+    "dev": "nodemon src/index.ts",
+    "lint": "eslint src",
+    "lint-staged": "lint-staged",
+    "prettier-check": "prettier --check .",
+    "prettier-fix": "prettier --write .",
+    "start": "npm run dbm:up && tsc --project tsconfig.build.json && node dist/src/index.js",
+    "test": "vitest",
+    "test-watch": "vitest --watch",
+    "tsc-check": "tsc --noEmit"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run test"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "npm run prettier:fix",
+      "npm run lint",
+      "git add"
+    ]
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "setupFilesAfterEnv": [
+      "./src/testUtils/setupAfterEnv.ts"
+    ],
+    "testEnvironment": "node"
+  },
   "dependencies": {
     "@aws-sdk/client-ses": "3.238.0",
     "@aws-sdk/client-sqs": "3.231.0",
@@ -70,7 +131,6 @@
     "sequelize-cli": "^6.5.2",
     "sqs-consumer": "6.0.2",
     "ts-node": "9.1.1",
-    "typescript": "4.1.3",
     "winston": "^3.8.2"
   },
   "devDependencies": {
@@ -82,6 +142,7 @@
     "@types/supertest": "2.0.10",
     "@typescript-eslint/eslint-plugin": "4.14.2",
     "@typescript-eslint/parser": "4.14.2",
+    "@vitest/coverage-istanbul": "^4.1.9",
     "eslint": "7.19.0",
     "eslint-config-airbnb-typescript": "12.0.0",
     "eslint-config-prettier": "6.15.0",
@@ -93,18 +154,9 @@
     "prettier": "2.2.1",
     "sinon": "15.0.1",
     "supertest": "6.1.3",
-    "ts-jest": "26.5.0"
-  },
-  "lint-staged": {
-    "src/**/*.ts": [
-      "npm run prettier:fix",
-      "npm run lint",
-      "git add"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged && npm run test"
-    }
+    "ts-jest": "26.5.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.1",
+    "vitest": "^4.1.9"
   }
 }

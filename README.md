@@ -1,8 +1,8 @@
 # Email Service
 
-A Node.js microservice for sending templated emails via AWS SQS, built with TypeScript. The service consumes messages from SQS queues, fetches email templates from a database, renders them with Handlebars, and sends emails via AWS SES or SMTP.
+A Node.js microservice for reliable transactional email delivery using AWS SQS, TypeScript, and template-driven rendering.
 
-Built in February 2023. This production-ready service handles transactional emails with template management, queue-based processing, and comprehensive monitoring.
+Built in February 2023, it consumes queue messages, retrieves stored Handlebars templates from a database, and generates dynamic HTML/text emails. Supports AWS SES and SMTP transports, multi-tenant configurations, automatic retry handling, and structured logging with Winston and DataDog monitoring. Built for scalable, production-grade email processing with strong type safety and observability.
 
 ## Features
 
@@ -17,7 +17,88 @@ Built in February 2023. This production-ready service handles transactional emai
 - 🏥 **Health Checks** - Health and version endpoints for monitoring
 - ✅ **Tested** - Comprehensive unit tests with Jest
 
+### Core Capabilities
+
+- **AWS SQS Integration**: Consumes queue messages for reliable email delivery
+- **Multiple Transport Options**: Supports AWS SES and SMTP (Nodemailer)
+- **Template Management**: Database-driven email templates with Handlebars rendering
+- **Multi-tenant Support**: Account-specific email templates
+- **Automatic Retry**: Failed messages remain in queue for retry
+- **DataDog Monitoring**: Built-in DataDog integration for observability
+
+### Technical Excellence
+
+- **Type Safety**: Written in TypeScript with strict type checking
+- **Database Migrations**: Sequelize ORM with migration support
+- **Logging**: Winston logging with DataDog integration
+- **Testing**: Comprehensive unit tests with Jest
+- **Code Quality**: ESLint and Prettier for consistent code style
+
+### Developer Experience
+
+- **Environment Management**: Easy configuration via environment variables or config files
+- **Health Monitoring**: Built-in health and version endpoints
+- **Development Mode**: Nodemon for auto-reload during development
+- **TypeScript Support**: Full TypeScript with type definitions
+- **Testing**: Jest for unit and integration testing
+
 ## Architecture
+
+### Architecture Principles
+
+This project follows clean architecture principles:
+
+1. **Separation of Concerns**: Code is organized into clear modules (logging, SQS, email sending, etc.)
+2. **Error Handling**: Custom `SQSError` class for controlled error handling and message deletion decisions
+3. **Structured Logging**: Use Winston logger for consistent log format and DataDog integration
+4. **Type Safety**: Strict TypeScript with comprehensive type definitions
+5. **Testability**: Pure functions and clear interfaces for easy unit testing
+6. **Configuration**: Environment-based configuration for flexibility across deployments
+
+### Design Patterns
+
+- **Singleton Pattern**: EmailSender follows a singleton pattern for consistent configuration
+- **Strategy Pattern**: Supports multiple email transport strategies (AWS SES, SMTP)
+- **Factory Pattern**: Transporter factory for creating different email transport instances
+- **Observer Pattern**: Winston logger for event tracking and monitoring
+- **Repository Pattern**: Sequelize ORM for database access abstraction
+
+### Directory Structure
+
+```
+email-service/
+├── config/                  # Environment and database configuration
+├── migrations/              # Database migrations
+├── src/
+│   ├── logging/             # Winston and DataDog logging
+│   ├── schemas/             # Sequelize models/schemas
+│   ├── sqs/                 # SQS consumer and message handlers
+│   ├── testUtils/           # Test utilities and mocks
+│   ├── types/               # TypeScript type definitions
+│   ├── utils/               # Utility functions
+│   │   └── emailSender/     # Email sender singleton and implementations
+│   ├── app.ts               # Express application setup
+│   ├── constants.ts         # Application constants
+│   ├── index.ts             # Application entry point
+│   └── Model.ts             # Database model interface
+├── .env.example             # Example environment variables
+├── .eslintrc.json           # ESLint configuration
+├── .prettierrc              # Prettier configuration
+├── tsconfig.json            # TypeScript configuration
+└── tsconfig.build.json      # TypeScript build configuration
+```
+
+### Best Practices
+
+1. **Error Handling**: Use `SQSError` class to control whether messages should be deleted from queue
+2. **Logging**: Always use the Winston logger instead of `console.log` for consistent logging
+3. **Type Safety**: Leverage TypeScript for type checking and avoid `any` types
+4. **Testing**: Write unit tests for new functionality and run tests before committing
+5. **Code Style**: Follow ESLint and Prettier rules for consistent code style
+6. **Configuration**: Use environment variables for sensitive configuration and avoid hardcoding
+7. **Security**: Never commit sensitive information (API keys, credentials) to version control
+
+### Architecture Diagram
 
 ```mermaid
 graph TB
@@ -31,10 +112,10 @@ graph TB
     Sender -->|Option 2| SMTP[SMTP Server]
     Handler -->|Log| Logger[Winston Logger]
     Logger -->|Ship| DataDog[DataDog]
-    
+
     API[Express API] -->|Health Check| Health[/health]
     API -->|Version| Version[/version]
-    
+
     style SQS fill:#FF9900
     style DB fill:#4479A1
     style SES fill:#FF9900
@@ -53,12 +134,14 @@ graph TB
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/orassayag/email-service.git
 cd email-service
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -66,11 +149,13 @@ npm install
 3. Configure environment variables (see [Configuration](#configuration))
 
 4. Run database migrations:
+
 ```bash
 npm run dbm:up
 ```
 
 5. Build the project:
+
 ```bash
 npm start
 ```
@@ -114,11 +199,13 @@ See [INSTRUCTIONS.md](INSTRUCTIONS.md) for detailed configuration options.
 ### Starting the Service
 
 **Development mode with auto-reload:**
+
 ```bash
 npm run dev
 ```
 
 **Production mode:**
+
 ```bash
 npm start
 ```
@@ -162,12 +249,14 @@ INSERT INTO email_templates (
 ### API Endpoints
 
 **Health Check:**
+
 ```bash
 curl http://localhost:5000/api/v1/health
 # Returns: Ok
 ```
 
 **Version:**
+
 ```bash
 curl http://localhost:5000/api/v1/version
 # Returns: version from version.txt
@@ -175,20 +264,20 @@ curl http://localhost:5000/api/v1/version
 
 ## Available Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| **start** | `npm start` | Build and run in production mode |
-| **dev** | `npm run dev` | Run in development mode with auto-reload |
-| **test** | `npm test` | Run all tests |
-| **test-watch** | `npm run test-watch` | Run tests in watch mode |
-| **lint** | `npm run lint` | Check for linting errors |
-| **prettier-check** | `npm run prettier-check` | Check code formatting |
-| **prettier-fix** | `npm run prettier-fix` | Fix code formatting |
-| **tsc-check** | `npm run tsc-check` | Type-check without emitting files |
-| **dbm:create** | `npm run dbm:create -- name` | Create a new migration |
-| **dbm:up** | `npm run dbm:up` | Run all pending migrations |
-| **dbm:down** | `npm run dbm:down` | Rollback last migration |
-| **dbs:up** | `npm run dbs:up` | Run database seeds |
+| Script             | Command                      | Description                              |
+| ------------------ | ---------------------------- | ---------------------------------------- |
+| **start**          | `npm start`                  | Build and run in production mode         |
+| **dev**            | `npm run dev`                | Run in development mode with auto-reload |
+| **test**           | `npm test`                   | Run all tests                            |
+| **test-watch**     | `npm run test-watch`         | Run tests in watch mode                  |
+| **lint**           | `npm run lint`               | Check for linting errors                 |
+| **prettier-check** | `npm run prettier-check`     | Check code formatting                    |
+| **prettier-fix**   | `npm run prettier-fix`       | Fix code formatting                      |
+| **tsc-check**      | `npm run tsc-check`          | Type-check without emitting files        |
+| **dbm:create**     | `npm run dbm:create -- name` | Create a new migration                   |
+| **dbm:up**         | `npm run dbm:up`             | Run all pending migrations               |
+| **dbm:down**       | `npm run dbm:down`           | Rollback last migration                  |
+| **dbs:up**         | `npm run dbs:up`             | Run database seeds                       |
 
 ## Project Structure
 
@@ -237,11 +326,13 @@ Error logs include message details for debugging while avoiding sensitive data e
 ## Testing
 
 Run the test suite:
+
 ```bash
 npm test
 ```
 
 Tests include:
+
 - Unit tests for email preparation
 - Email sender singleton tests
 - Mock implementations for AWS services
@@ -264,15 +355,20 @@ Tests include:
 ## Monitoring & Logging
 
 ### DataDog Integration
+
 Automatic DataDog monitoring initialization on startup. Configure API keys in environment variables.
 
 ### Winston Logging
+
 Structured logging throughout the application:
+
 - Info: Successful operations, message processing
 - Error: Failures, invalid messages
 
 ### Health Checks
+
 Built-in endpoints for monitoring:
+
 - `/api/v1/health` - Service health status
 - `/api/v1/version` - Application version
 
@@ -288,6 +384,7 @@ Built-in endpoints for monitoring:
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
+
 - Code of conduct
 - Development workflow
 - Coding standards
@@ -296,19 +393,19 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This application has an MIT license - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
-* **Or Assayag** - *Initial work* - [orassayag](https://github.com/orassayag)
-* Or Assayag <orassayag@gmail.com>
-* GitHub: https://github.com/orassayag
-* StackOverflow: https://stackoverflow.com/users/4442606/or-assayag?tab=profile
-* LinkedIn: https://linkedin.com/in/orassayag
+- **Or Assayag** - _Initial work_ - [orassayag](https://github.com/orassayag)
+- Or Assayag <orassayag@gmail.com>
+- GitHub: https://github.com/orassayag
+- StackOverflow: https://stackoverflow.com/users/4442606/or-assayag?tab=profile
+- LinkedIn: https://linkedin.com/in/orassayag
 
 ## Acknowledgments
 
-- Built with best practices for production microservices
-- Follows AWS Well-Architected Framework principles
-- Implements singleton pattern for email sender
-- Uses queue-based architecture for reliability
+- Built for educational and research purposes
+- Respects robots.txt and implements rate limiting
+- Uses user-agent rotation to avoid detection
+- Implements polite crawling practices

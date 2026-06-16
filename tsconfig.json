@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
+    "module": "ESNext",
     "rootDir": "./",
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -9,9 +9,10 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "types": ["node", "vitest"]
   },
   "include": ["src", "**/*.js", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"]

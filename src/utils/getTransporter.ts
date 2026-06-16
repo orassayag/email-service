@@ -27,7 +27,7 @@ const transporterSes = {
   SES: { ses: sesClient, aws: ses },
 } as SESTransport.Options;
 
-const getTransport = (engine: TransportEngine): SMTPTransport.Options  =>
+const getTransport = (engine: TransportEngine): SMTPTransport.Options =>
   engine === deliverBySES ? transporterSes : transporterSMTP;
 
 export default getTransport;

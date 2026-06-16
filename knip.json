@@ -1,0 +1,42 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": [
+    "migrations/20221214080450-create-email-templates.js",
+    "vitest.config.ts"
+  ],
+  "ignoreDependencies": [
+    "@types/supertest",
+    "@types/sequelize",
+    "@types/sinon",
+    "eslint",
+    "eslint-config-airbnb-typescript",
+    "eslint-plugin-import",
+    "eslint-plugin-prettier",
+    "jest",
+    "jest-when",
+    "lint-staged",
+    "prettier",
+    "sinon",
+    "supertest",
+    "typescript-eslint",
+    "body-parser",
+    "express-validator",
+    "mariadb",
+    "mysql2",
+    "nodemon",
+    "sequelize-cli",
+    "ts-node"
+  ],
+  "ignoreBinaries": [
+    "sequelize-cli",
+    "nodemon",
+    "eslint",
+    "lint-staged",
+    "prettier",
+    "jest",
+    "tsc"
+  ],
+  "ignoreIssues": {
+    "src/types/types.ts": ["types"]
+  }
+}

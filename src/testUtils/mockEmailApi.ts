@@ -1,6 +1,7 @@
 import { EmailApiSenderSendEmailResponse, IEmailApi } from '../types/types';
+import { vi } from 'vitest';
 
-export const mockSendEmailByEmailType = jest.fn();
+export const mockSendEmailByEmailType = vi.fn();
 
 export class MockEmailApi implements IEmailApi {
   sendEmailByEmailType(): Promise<EmailApiSenderSendEmailResponse> {

@@ -8,7 +8,10 @@ export default class Model {
     throw new Error('Cannot create an instance.');
   }
 
-  static findEmailTemplateByType = async ({ templateType, accountId }: any): Promise<typeof EmailTemplates> =>
+  static findEmailTemplateByType = async ({
+    templateType,
+    accountId,
+  }: any): Promise<any> =>
     db.EmailTemplates.findOne({
       where: {
         templateType,
